@@ -3,7 +3,7 @@ set -euo pipefail
 
 REPO="media-kit/libmpv-darwin-build"
 DRY_RUN=0
-VERSION="v0.7.0"
+VERSION="v0.8.1"
 VERSION_SET=0
 
 usage() {

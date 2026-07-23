@@ -3,6 +3,10 @@
 - fix: flutter 3.38.x crash
 - fix(linux): flutter 3.38.x h/w render
 
+## Unreleased
+
+- build(darwin): bump `mpv` headers to `0.41.0`
+
 ## 2.0.0
 
 - feat: flutter 3.38.x support

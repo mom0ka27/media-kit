@@ -3,8 +3,8 @@ HEADERS_DESTDIR_ESCAPED=$(subst $(SPACE),\ ,${HEADERS_DESTDIR})
 
 all: ${HEADERS_DESTDIR_ESCAPED}/mpv/*.h
 
-MPV_HEADERS_VERSION=v0.36.0
-MPV_HEADERS_SHA256SUM=29abc44f8ebee013bb2f9fe14d80b30db19b534c679056e4851ceadf5a5e8bf6
+MPV_HEADERS_VERSION=v0.41.0
+MPV_HEADERS_SHA256SUM=ee21092a5ee427353392360929dc64645c54479aefdb5babc5cfbb5fad626209
 
 TAR=tar
 TAR_WILDCARDS_FLAG := $(shell ${TAR} --version 2>&1 | grep -q 'GNU' && echo "--wildcards" || echo "")
@@ -25,5 +25,5 @@ TAR_WILDCARDS_FLAG := $(shell ${TAR} --version 2>&1 | grep -q 'GNU' && echo "--w
 
 ${HEADERS_DESTDIR_ESCAPED}/mpv/*.h: .cache/headers/mpv.tar.gz
 	mkdir -p ${HEADERS_DESTDIR_ESCAPED}/mpv
-	${TAR} ${TAR_WILDCARDS_FLAG} -xvf .cache/headers/mpv.tar.gz --strip-components 2 -C ${HEADERS_DESTDIR_ESCAPED}/mpv/ 'mpv-*/libmpv/*.h'
+	${TAR} ${TAR_WILDCARDS_FLAG} -xvf .cache/headers/mpv.tar.gz --strip-components 3 -C ${HEADERS_DESTDIR_ESCAPED}/mpv/ 'mpv-*/include/mpv/*.h'
 	touch ${HEADERS_DESTDIR_ESCAPED}/mpv/*.h

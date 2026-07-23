@@ -93,15 +93,17 @@ public class TextureHW: NSObject, FlutterTexture, ResizableTextureProtocol {
       mpv_render_context_create(&renderContext, handle, &params)
     )
 
-    mpv_render_context_set_update_callback(
-      renderContext,
-      { (ctx) in
-        let that = unsafeBitCast(ctx, to: TextureHW.self)
-        DispatchQueue.main.async {
-          that.updateCallback()
-        }
-      },
-      UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque())
+    MPVHelpers.checkError(
+      mpv_render_context_set_update_callback(
+        renderContext,
+        { (ctx) in
+          let that = unsafeBitCast(ctx, to: TextureHW.self)
+          DispatchQueue.main.async {
+            that.updateCallback()
+          }
+        },
+        UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque())
+      )
     )
   }
 
@@ -114,6 +116,7 @@ public class TextureHW: NSObject, FlutterTexture, ResizableTextureProtocol {
 
     mpv_render_context_set_update_callback(renderContext, nil, nil)
     mpv_render_context_free(renderContext)
+    renderContext = nil
   }
 
   public func resize(_ size: CGSize) {
