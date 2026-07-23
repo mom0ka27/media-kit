@@ -8,26 +8,20 @@ let libmpvTargets = [
     "Avfilter",
     "Avformat",
     "Avutil",
-    "Mbedcrypto",
-    "Mbedtls",
-    "Mbedx509",
     "Mpv",
     "Swresample",
     "Swscale"
 ]
 
-let libmpvArtifactBase = "https://github.com/media-kit/libmpv-darwin-build/releases/download/v0.7.2/libmpv-xcframeworks_v0.7.2_macos-universal-audio-full"
+let libmpvArtifactBase = "https://github.com/mom0ka27/libmpv-darwin-build/releases/download/v0.8.1/libmpv-xcframeworks_v0.8.1_macos-universal-audio-full"
 let libmpvChecksums = [
-    "Avcodec": "3019da15c5b7767d7dc4d70edc86de467cb74ca2cd3a8194db5049fa5dd9ba01",
-    "Avfilter": "fcfcc281e003177e72d521b8a297ab7205e238bbeaa03309ed0fc1293a5e54bc",
-    "Avformat": "cbce6959c1c3c05d44f7895bd0ead6e23d79cb207f76d007578e8bee5fe19208",
-    "Avutil": "7fff02e8c7fe945cad51e9994364ea38e31d3085e3c9395fc1b56dd75fd4c1e0",
-    "Mbedcrypto": "a9747876764cc95d7a222191bb04c9e89dca23d582664e4ada3cdb83c112ab37",
-    "Mbedtls": "fad60234122c4e6c78d52b31a9790a33dbf124a7ba30174c7570dab13b390b77",
-    "Mbedx509": "2246704fbaa1a1c13f357303016cc4c719e597a93380b091e46e977ec0134341",
-    "Mpv": "14a370ac4f1c9e3da4809ad0e9c400aed65773daf8907325e98fd773294edb9d",
-    "Swresample": "c862de2cd5975a87f86119845cbc6cb89db58bb8918f607d8f81dfbc4dd87caf",
-    "Swscale": "4aa0ad799043458cfc07742b39146ecefda27516bf8af0b52de405abdaf2ddd0"
+    "Avcodec": "f7590fb24fc8f57a952ad0a5987880d64aa14563174e35945291b1bfba802a71",
+    "Avfilter": "5bf14d74f74f7ad47d9e27b23d2f6d46caf64824ebc4d02d7ddc3db4a6b35edd",
+    "Avformat": "7a122c5a92f0b0b3a43ad73d5dd6eabfc157d3e5896ccc3909c9f5d2b66bb206",
+    "Avutil": "69675decdf46ae88fb340d61e7a060ce6e2b12e1b2917086309bcd9a72206a68",
+    "Mpv": "aa369d938e47fdddc2c5b74ef4cce36b2e90e51c517ba915724ff857f26e4476",
+    "Swresample": "f747b33e68c3c5c9d74bb378b273cdbbdbc6093bfd241eac3312d09a473abed5",
+    "Swscale": "1799ab33851e204eee4786bff79839c905d699d1eab40016e29645afc72ee381"
 ]
 
 let package = Package(
