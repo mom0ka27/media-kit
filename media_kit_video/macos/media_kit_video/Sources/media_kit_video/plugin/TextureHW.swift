@@ -20,6 +20,34 @@ public class TextureHW: NSObject, FlutterTexture, ResizableTextureProtocol {
     skipCheckArgs: true
   )
 
+  // #region debug-point mpv-render-lifecycle
+  private static func debugReport(
+    _ hypothesisId: String,
+    _ message: String,
+    _ data: [String: Any]
+  ) {
+    guard let endpoint = ProcessInfo.processInfo.environment["DEBUG_SERVER_URL"],
+      let url = URL(string: endpoint)
+    else {
+      return
+    }
+    let sessionId = ProcessInfo.processInfo.environment["DEBUG_SESSION_ID"] ?? "macos-mpv-segfault"
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    request.httpBody = try? JSONSerialization.data(withJSONObject: [
+      "sessionId": sessionId,
+      "runId": "pre",
+      "hypothesisId": hypothesisId,
+      "location": "TextureHW.swift",
+      "msg": message,
+      "data": data,
+      "ts": Int(Date().timeIntervalSince1970 * 1000),
+    ])
+    URLSession.shared.dataTask(with: request).resume()
+  }
+  // #endregion
+
   init(
     handle: OpaquePointer,
     updateCallback: @escaping UpdateCallback
@@ -58,6 +86,10 @@ public class TextureHW: NSObject, FlutterTexture, ResizableTextureProtocol {
   }
 
   private func initMPV() {
+    TextureHW.debugReport("A", "initMPV.begin", [
+      "handleNil": false,
+      "contextNil": context == nil,
+    ])
     CGLSetCurrentContext(context)
     defer {
       OpenGLHelpers.checkError("initMPV")
@@ -89,25 +121,32 @@ public class TextureHW: NSObject, FlutterTexture, ResizableTextureProtocol {
       ]
     }
 
-    MPVHelpers.checkError(
-      mpv_render_context_create(&renderContext, handle, &params)
-    )
+    let status = mpv_render_context_create(&renderContext, handle, &params)
+    TextureHW.debugReport("A", "initMPV.context-created", [
+      "status": Int(status),
+      "renderContextNil": renderContext == nil,
+    ])
+    MPVHelpers.checkError(status)
 
-    MPVHelpers.checkError(
-      mpv_render_context_set_update_callback(
-        renderContext,
-        { (ctx) in
-          let that = unsafeBitCast(ctx, to: TextureHW.self)
-          DispatchQueue.main.async {
-            that.updateCallback()
-          }
-        },
-        UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque())
-      )
+    mpv_render_context_set_update_callback(
+      renderContext,
+      { (ctx) in
+        let that = unsafeBitCast(ctx, to: TextureHW.self)
+        DispatchQueue.main.async {
+          that.updateCallback()
+        }
+      },
+      UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque())
     )
+    TextureHW.debugReport("B", "initMPV.callback-set", [
+      "renderContextNil": renderContext == nil,
+    ])
   }
 
   private func disposeMPV() {
+    TextureHW.debugReport("B", "disposeMPV.begin", [
+      "renderContextNil": renderContext == nil,
+    ])
     CGLSetCurrentContext(context)
     defer {
       OpenGLHelpers.checkError("disposeMPV")
@@ -117,9 +156,16 @@ public class TextureHW: NSObject, FlutterTexture, ResizableTextureProtocol {
     mpv_render_context_set_update_callback(renderContext, nil, nil)
     mpv_render_context_free(renderContext)
     renderContext = nil
+    TextureHW.debugReport("B", "disposeMPV.end", [
+      "renderContextNil": renderContext == nil,
+    ])
   }
 
   public func resize(_ size: CGSize) {
+    TextureHW.debugReport("C", "resize", [
+      "width": size.width,
+      "height": size.height,
+    ])
     if size.width == 0 || size.height == 0 {
       return
     }
@@ -159,6 +205,12 @@ public class TextureHW: NSObject, FlutterTexture, ResizableTextureProtocol {
 
   public func render(_ size: CGSize) {
     let textureContext = textureContexts.nextAvailable()
+    TextureHW.debugReport("C", "render.selected-context", [
+      "width": size.width,
+      "height": size.height,
+      "contextNil": textureContext == nil,
+      "renderContextNil": renderContext == nil,
+    ])
     if textureContext == nil {
       return
     }
@@ -186,7 +238,12 @@ public class TextureHW: NSObject, FlutterTexture, ResizableTextureProtocol {
       mpv_render_param(type: MPV_RENDER_PARAM_OPENGL_FBO, data: fboPtr),
       mpv_render_param(type: MPV_RENDER_PARAM_INVALID, data: nil),
     ]
-    mpv_render_context_render(renderContext, &params)
+    let status = mpv_render_context_render(renderContext, &params)
+    TextureHW.debugReport("A", "render.completed", [
+      "status": Int(status),
+      "renderContextNil": renderContext == nil,
+      "frameBuffer": Int(textureContext!.frameBuffer),
+    ])
 
     glFlush()
 

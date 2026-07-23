@@ -182,7 +182,7 @@ update_artifact \
   "iOS audio" \
   "ios" \
   "audio" \
-  "default" \
+  "full" \
   "libs/ios/media_kit_libs_ios_audio/ios/Makefile" \
   "libs/ios/media_kit_libs_ios_audio/ios/media_kit_libs_ios_audio/Package.swift" \
   "Avcodec" \
